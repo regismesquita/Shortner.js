@@ -11,7 +11,7 @@ var http = require('http'),
 var app = express.createServer();
 app.use(express.bodyDecoder());
 
-var store = function(site, url)
+var store = function(site, url, res)
 {
     client.set(site, url);
     res.send(site + ' now contains ' + url + '.\n');
@@ -19,14 +19,14 @@ var store = function(site, url)
 
 var storeSiteFromParams = function(req, res)
 {
-    store(req.params.site, req.body.siteurl);
+    store(req.params.site, req.body.siteurl, res);
 };
 
 app.post('/store/:site', storeSiteFromParams);
 
 app.post('/', function(req, res)
 {
-    store(req.body.site, req.body.siteurl);
+    store(req.body.site, req.body.siteurl, res);
 });
 
 app.put('/:site', storeSiteFromParams);
