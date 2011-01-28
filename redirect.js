@@ -29,6 +29,7 @@ app.post('/', function(req, res)
     store(req.body.site, req.body.siteurl);
 });
 
+app.put('/:site', storeSiteFromParams);
 app.get('/:site', function(req, res)
 {
     client.get(req.params.site,function (err,reply){
