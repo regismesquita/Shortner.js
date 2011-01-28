@@ -17,6 +17,7 @@ var store = function(site, url, res)
     client.get(site, function(err, reply) {
         if (null == reply) {
             client.set(site, url);
+            client.set(site + '+', 0);
             res.send(site + ' now contains ' + url + '.\n');
         } else {
             res.send(409);
@@ -24,9 +25,15 @@ var store = function(site, url, res)
     });
 };
 
-var validateSite = function(site, response) {
-    if ('+' == site[site.length - 1]) {
-        response.send('Shortcut cannot end with plus sign (+)', 400);
+var isInfoShortcut = function(site)
+{
+    return '+' == site[site.length - 1];
+};
+
+var validateSite = function(site, response)
+{
+    if (isInfoShortcut(site)) {
+        response.send('Shortcut cannot end with plus sign (+)\n', 400);
         return false;
     }
     return true;
@@ -47,8 +54,14 @@ app.post('/', function(req, res)
 app.put('/:site', storeSiteFromParams);
 app.get('/:site', function(req, res)
 {
-    client.get(req.params.site,function (err,reply){
-      res.redirect(reply, 301)
+    var site = req.params.site;
+    client.get(site,function (err,reply){
+        if (isInfoShortcut(site)) {
+            res.send(reply);
+        } else {
+            client.incr(site + '+');
+            res.redirect(reply, 301);
+        }
     })
 });
 app.listen(8000);
