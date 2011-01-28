@@ -17,10 +17,12 @@ var store = function(site, url)
     res.send(site + ' now contains ' + url + '.\n');
 };
 
-app.post('/store/:site', function(req, res)
+var storeSiteFromParams = function(req, res)
 {
     store(req.params.site, req.body.siteurl);
-});
+};
+
+app.post('/store/:site', storeSiteFromParams);
 
 app.post('/', function(req, res)
 {
