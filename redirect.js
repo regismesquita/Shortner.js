@@ -33,7 +33,7 @@ app.put('/:site', storeSiteFromParams);
 app.get('/:site', function(req, res)
 {
     client.get(req.params.site,function (err,reply){
-      res.redirect(reply)
+      res.redirect(reply, 301)
     })
 });
 app.listen(8000);
