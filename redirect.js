@@ -13,8 +13,14 @@ app.use(express.bodyDecoder());
 
 var store = function(site, url, res)
 {
-    client.set(site, url);
-    res.send(site + ' now contains ' + url + '.\n');
+    client.get(site, function(err, reply) {
+        if (null == reply) {
+            client.set(site, url);
+            res.send(site + ' now contains ' + url + '.\n');
+        } else {
+            res.send(409);
+        }
+    });
 };
 
 var storeSiteFromParams = function(req, res)
