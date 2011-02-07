@@ -55,6 +55,12 @@ app.put('/:site', storeSiteFromParams);
 app.get('/:site', function(req, res)
 {
     var site = req.params.site;
+    if (isInfoShortcut(site) {
+        client.setnx(site, 0);
+    } else {
+        client.setnx(site + '+', 0);
+    }
+
     client.get(site,function (err,reply){
         if (isInfoShortcut(site)) {
             res.send(reply);
@@ -62,6 +68,6 @@ app.get('/:site', function(req, res)
             client.incr(site + '+');
             res.redirect(reply, 301);
         }
-    })
+    });
 });
 app.listen(8000);
