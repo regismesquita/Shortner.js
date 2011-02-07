@@ -17,7 +17,7 @@ var store = function(site, url, res)
     client.get(site, function(err, reply) {
         if (null == reply) {
             client.set(site, url);
-            client.set(site + '+', 0);
+            client.set(toInfoShortcut(site), 0);
             res.send(site + ' now contains ' + url + '.\n');
         } else {
             res.send(409);
@@ -28,6 +28,10 @@ var store = function(site, url, res)
 var isInfoShortcut = function(site)
 {
     return '+' == site[site.length - 1];
+};
+
+var toInfoShortcut = function(site) {
+    return isInfoShortcut(site) ? site : site + '+';
 };
 
 var validateSite = function(site, response)
@@ -55,17 +59,13 @@ app.put('/:site', storeSiteFromParams);
 app.get('/:site', function(req, res)
 {
     var site = req.params.site;
-    if (isInfoShortcut(site) {
-        client.setnx(site, 0);
-    } else {
-        client.setnx(site + '+', 0);
-    }
 
+    client.setnx(toInfoShortcut(site), 0);
     client.get(site,function (err,reply){
         if (isInfoShortcut(site)) {
             res.send(reply);
         } else {
-            client.incr(site + '+');
+            client.incr(toInfoShortcut(site));
             res.redirect(reply, 301);
         }
     });
