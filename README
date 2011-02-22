@@ -2,6 +2,6 @@ A URL Shortner simple yet useful for me ;)
 
 You just do a post to host/store/_ShortName_ containing a "siteurl" parameter and You can later access at host/_ShortName_
 
-Thanks to Thiago Arrais < http://www.github.com/thiagoarrais > now you can do a put request to /_ShortName_ with a siteurl in the request body or do a POST to "/" containing a "site" and a "siteurl" parameters.
+You can also do a put request to /_ShortName_ with a siteurl in the request body or do a POST to "/" containing a "site" and a "siteurl" parameters.
 
 

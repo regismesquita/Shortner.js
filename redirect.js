@@ -13,9 +13,34 @@ app.use(express.bodyDecoder());
 
 var store = function(site, url, res)
 {
-    client.set(site, url);
-    client.set(site+"_counter", 0);
-    res.send(site + ' now contains ' + url + '.\n');
+    if (!validateSite(site, res)) {return;}
+    client.get(site, function(err, reply) {
+        if (null == reply) {
+            client.set(site, url);
+            client.set(toInfoShortcut(site), 0);
+            res.send(site + ' now contains ' + url + '.\n');
+        } else {
+            res.send(409);
+        }
+    });
+};
+
+var isInfoShortcut = function(site)
+{
+    return '+' == site[site.length - 1];
+};
+
+var toInfoShortcut = function(site) {
+    return isInfoShortcut(site) ? site : site + '+';
+};
+
+var validateSite = function(site, response)
+{
+    if (isInfoShortcut(site)) {
+        response.send('Shortcut cannot end with plus sign (+)\n', 400);
+        return false;
+    }
+    return true;
 };
 
 var storeSiteFromParams = function(req, res)
@@ -33,18 +58,17 @@ app.post('/', function(req, res)
 app.put('/:site', storeSiteFromParams);
 app.get('/:site', function(req, res)
 {
-    client.setnx(req.params.site+"_counter",0)
-    client.incr(req.params.site+"_counter")
-    client.get(req.params.site,function (err,reply){
-      res.redirect(reply)
-    })
-});
-app.get('/info/:site', function(req, res)
-{
-    client.setnx(req.params.site+"_counter",0)
-    client.get(req.params.site+"_counter",function (err,reply){
-      res.send("The "+req.params.site+" has been accessed "+reply+" times.")
-    })
+   var site = req.params.site;
+
+    client.setnx(toInfoShortcut(site), 0);
+    client.get(site,function (err,reply){
+        if (isInfoShortcut(site)) {
+            res.send("The "+req.params.site+" has been accessed "+reply+" times.")
+        } else {
+            client.incr(toInfoShortcut(site));
+            res.redirect(reply, 301);
+        }
+    });
 });
 
 app.listen(8000);
