@@ -64,7 +64,7 @@ var buildGraphUrl = function(keys, values){
     }      
   };
 
-  return 'http://chart.apis.google.com/chart?chxl=0:'+k+'&chxr=0,-3.333,100&chxt=x,y&chbh=23,15,10&chs=350x200&cht=bvs&chds=1.667,150&chd=t:'+val
+  return 'http://chart.apis.google.com/chart?chxl=0:'+k+'&chxr=0,-3.333,100&chxt=x,y&chbh=23,15,10&chs=350x200&cht=bvs&chds=1.667,100&chd=t:'+val
   
 };
 
