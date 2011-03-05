@@ -41,39 +41,39 @@ var toInfoKey = function(site) {
 };
 
 var getKeysForGraph = function(site){
-	keys = [];
-	date = Date.parse('today');
-	for (var i=0; i < 7; i++) {
-		key = site.replace('+', '')+'-'+date.toString("d/M/yyyy");
-		keys.push(key);
-		date.add(-1).days();
-	};
-	return keys;
-};	
+  keys = [];
+  date = Date.parse('today');
+  for (var i=0; i < 7; i++) {
+    key = site.replace('+', '')+'-'+date.toString("d/M/yyyy");
+    keys.push(key);
+    date.add(-1).days();
+  };
+  return keys;
+};  
 
 var buildGraphUrl = function(keys, values){
-	if (values[0] == null) values[0] = 0
-	val = values[0];
-	data = keys[0].split('-')[1].split('/')
-	k = '|'+data[0]+'%2F'+data[1]				
-	for (var i=1; i < values.length; i++) {
-		if (values[i] != null){
-			val += ','+values[i]
-			data = keys[i].split('-')[1].split('/')
-			k += '|'+data[0]+'%2F'+data[1]			
-		}			
-	};
+  if (values[0] == null) values[0] = 0
+  val = values[0];
+  data = keys[0].split('-')[1].split('/')
+  k = '|'+data[0]+'%2F'+data[1]        
+  for (var i=1; i < values.length; i++) {
+    if (values[i] != null){
+      val += ','+values[i]
+      data = keys[i].split('-')[1].split('/')
+      k += '|'+data[0]+'%2F'+data[1]      
+    }      
+  };
 
-	return 'http://chart.apis.google.com/chart?chxl=0:'+k+'&chxr=0,-3.333,100&chxt=x,y&chbh=23,15,10&chs=350x200&cht=bvs&chds=1.667,150&chd=t:'+val
-	
+  return 'http://chart.apis.google.com/chart?chxl=0:'+k+'&chxr=0,-3.333,100&chxt=x,y&chbh=23,15,10&chs=350x200&cht=bvs&chds=1.667,150&chd=t:'+val
+  
 };
 
 var showGraph = function(site, res) {
-	keys = getKeysForGraph(site);
-	client.mget(keys, function(err, reply){
-		graphUrl = buildGraphUrl(keys, reply);
-		res.redirect(graphUrl, 301);	
-	});
+  keys = getKeysForGraph(site);
+  client.mget(keys, function(err, reply){
+    graphUrl = buildGraphUrl(keys, reply);
+    res.redirect(graphUrl, 301);  
+  });
 };
 
 var validateSite = function(site, response)
@@ -104,9 +104,8 @@ app.get('/:site', function(req, res)
 
     client.setnx(toInfoKey(site), 0);
     client.get(site,function (err,reply){
-        if (isInfoShortcut(site)) {			
-			showGraph(site, res)	
-            //res.send("The "+req.params.site+" has been accessed "+reply+" times.")			
+        if (isInfoShortcut(site)) {      
+          showGraph(site, res)  
         } else {
             client.incr(toInfoKey(site));
             res.redirect(reply, 301);
