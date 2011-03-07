@@ -85,6 +85,21 @@ var validateSite = function(site, response)
     return true;
 };
 
+var incrementAndRedirect = function(req,res)
+{
+   var site = req.params.site;
+
+    client.setnx(toInfoKey(site), 0);
+    client.get(site,function (err,reply){
+        if (isInfoShortcut(site)) {      
+          showGraph(site, res)  
+        } else {
+            client.incr(toInfoKey(site));
+            res.redirect(reply, 301);
+        }
+    });
+};
+
 var storeSiteFromParams = function(req, res)
 {
     store(req.params.site, req.body.siteurl, res);
@@ -98,19 +113,11 @@ app.post('/', function(req, res)
 });
 
 app.put('/:site', storeSiteFromParams);
-app.get('/:site', function(req, res)
+app.get('/:site', incrementAndRedirect);
+app.get('/', function(req,res)
 {
-   var site = req.params.site;
-
-    client.setnx(toInfoKey(site), 0);
-    client.get(site,function (err,reply){
-        if (isInfoShortcut(site)) {      
-          showGraph(site, res)  
-        } else {
-            client.incr(toInfoKey(site));
-            res.redirect(reply, 301);
-        }
-    });
+    req.params.site = '';
+    incrementAndRedirect(req,res);
 });
 
 app.listen(8000);
