@@ -54,7 +54,7 @@ var getKeysForGraph = function(site){
 var buildGraphUrl = function(keys, values){
   if (values[0] == null) values[0] = 0
   val = values[0];
-  data = keys[0].split('-')[1].split('/')
+  data = keys[0].split('-').pop().split('/')
   k = '|'+data[0]+'%2F'+data[1]        
   for (var i=1; i < values.length; i++) {
     if (values[i] != null){
